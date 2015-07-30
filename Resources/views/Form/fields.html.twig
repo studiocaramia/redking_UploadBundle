@@ -1,0 +1,39 @@
+{% extends 'RedkingSonataExtendedBundle:Form:form_admin_fields.html.twig' %}
+
+{% block redking_image_widget %}
+{% spaceless %}
+    <div class="vich-image">
+        {# Cas ou ce widget est appelé dans un custom type, les vars sonata ne sont pas passées aux enfants #}
+        {% if sonata_admin.admin is null and form.parent.vars.sonata_admin.admin is not null %}
+            {% set sonata_admin = form.parent.vars.sonata_admin %}
+            {% set sonata_admin_enabled = form.parent.vars.sonata_admin_enabled %}
+        {% endif %}
+
+        {# Cas ou ce widget est appelé dans un custome type + a partir d'une collection, il faut aller chercher le parent du parent #}
+        {% if sonata_admin.admin is null and form.parent.parent is defined and form.parent.parent.vars.sonata_admin.admin is not null %}
+            {% set sonata_admin = form.parent.parent.vars.sonata_admin %}
+            {% set sonata_admin_enabled = form.parent.parent.vars.sonata_admin_enabled %}
+        {% endif %}
+
+        {{ form_row(form.file, {'sonata_admin': sonata_admin, 'sonata_admin_enabled': sonata_admin_enabled}) }}
+        {% if form.delete is defined %}
+        {{ form_row(form.delete, {'sonata_admin': sonata_admin, 'sonata_admin_enabled': sonata_admin_enabled}) }}
+        {% endif %}
+
+        <div>
+            <div class="col-md-3">
+                {% if show_download_link and download_uri is defined and download_uri%}
+                <a href="{{ download_uri }}" target="_blank" class="btn btn-primary btn-sm">
+                <span class="glyphicon glyphicon-download-alt"></span>
+                {{ 'download'|trans({}, 'VichUploaderBundle') }}</a>
+                {% endif %}
+            </div>
+            <div class="col-md-9">
+                {% if download_uri is defined and download_uri %}
+                 <a href="{{ download_uri }}" target="_blank"><img src="{{ download_uri }}" alt="" {% if dimensions.width %}width="{{ dimensions.width }}"{% endif %} {% if dimensions.height %}height="{{ dimensions.height }}"{% endif %} /></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock %}

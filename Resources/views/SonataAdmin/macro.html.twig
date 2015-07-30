@@ -1,0 +1,7 @@
+{% macro image(object, mapping, max_height, resize_name, show_link) %}
+    {% if show_link %}<a href="{{ redking_upload_asset(object, mapping) }}" target="_blank">{% endif %}
+    
+    <img src="{{ redking_upload_asset(object, mapping, resize_name) }}" title="{{ redking_upload_asset(object, mapping) }}" style="{% if max_height is not null %}max-height:{{ max_height }}px{% endif %}"/>
+
+    {% if show_link %}</a>{% endif %}
+{% endmacro %}

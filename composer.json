@@ -1,0 +1,29 @@
+{
+    "name": "redking/upload-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony 2 ",
+    "keywords": [ "symfony2", "upload", "amazon", "mongodb"],
+    "homepage": "https://bitbucket.org/redkingteam/redkinguploadbundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Damien Matabon",
+            "homepage": "http://www.makemyweb.fr/",
+            "email": "damien.matabon@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": "2.3.*",
+        "vich/uploader-bundle": "~0",
+        "knplabs/knp-gaufrette-bundle": "*@dev",
+        "aws/aws-sdk-php": "~2",
+        "gregwar/image-bundle": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "Redking\\Bundle\\UploadBundle": "" }
+    },
+    "target-dir": "Redking/Bundle/UploadBundle"
+}

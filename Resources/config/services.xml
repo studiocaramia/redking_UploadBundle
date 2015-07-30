@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    
+    <parameters>
+        <parameter key="redking_upload.aws_s3.client.arguments" type="collection">
+            <parameter key="key">%redking_upload.amazon_s3.key%</parameter>
+            <parameter key="secret">%redking_upload.amazon_s3.secret%</parameter>
+            <parameter key="region">%redking_upload.amazon_s3.region%</parameter>
+        </parameter>
+
+        <parameter key="redking_upload.namer.object.class">Redking\Bundle\UploadBundle\Naming\ObjectNamer</parameter>
+        <parameter key="redking_upload.namer.uuid.class">Redking\Bundle\UploadBundle\Naming\UuidNamer</parameter>
+        <parameter key="redking_upload.directory_namer.author.class">Redking\Bundle\UploadBundle\Naming\DirectoryAuthorNamer</parameter>
+        <parameter key="redking_upload.directory_namer.id.class">Redking\Bundle\UploadBundle\Naming\DirectoryIdNamer</parameter>
+    </parameters>
+
+    <services>
+    <!-- Client AWS S3 -->
+        <service id="redking_upload.aws_s3.client" class="Aws\S3\S3Client" factory-class="Aws\S3\S3Client" factory-method="factory">
+            <argument>%redking_upload.aws_s3.client.arguments%</argument>
+        </service>
+
+    <!-- Custom namer from object -->
+        <service id="redking_upload.namer.object" class="%redking_upload.namer.object.class%" />
+        <service id="redking_upload.namer.uuid" class="%redking_upload.namer.uuid.class%" />
+        <service id="redking_upload.directory_namer.author" class="%redking_upload.directory_namer.author.class%" />
+        <service id="redking_upload.directory_namer.id" class="%redking_upload.directory_namer.id.class%" />
+
+    <!-- EventSubscribers -->
+        <service id="redking_upload.document.subscriber" class="Redking\Bundle\UploadBundle\EventListener\DocumentEventSubscriber">
+            <tag name="doctrine_mongodb.odm.event_subscriber" />
+            <argument type="service" id="vich_uploader.metadata_reader" />
+            <argument type="service" id="vich_uploader.property_mapping_factory" />
+            <argument type="service" id="knp_gaufrette.filesystem_map" />
+            <argument>%redking_upload.resizes%</argument>
+        </service>
+        <service id="redking_upload.upload.subscriber" class="Redking\Bundle\UploadBundle\EventListener\UploadSubscriber">
+            <argument type="service" id="knp_gaufrette.filesystem_map" />
+            <argument type="service" id="image.handling" />
+            <argument>%redking_upload.resizes%</argument>
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+    <!-- Twig extension -->
+        <service id="redking_upload.twig.extension.upload" class="Redking\Bundle\UploadBundle\Twig\Extension\UploadExtension" public="false">
+            <tag name="twig.extension" />
+            <argument type="service" id="vich_uploader.templating.helper.uploader_helper" />
+        </service>
+
+    <!-- Form type -->
+        <service id="redking_upload.form.image" class="Redking\Bundle\UploadBundle\Form\Type\UploadedImageType">
+            <argument type="service" id="vich_uploader.storage" />
+            <argument type="service" id="vich_uploader.upload_handler" />
+            <argument type="service" id="translator" />
+
+            <tag name="form.type" alias="redking_image" />
+
+            <call method="setResizedConf">
+                <argument>%redking_upload.resizes%</argument>
+            </call>
+        </service>
+        <service id="redking_upload.form.redking_file_rest" class="Redking\Bundle\UploadBundle\Form\Type\RestFileType">
+            <tag name="form.type" alias="redking_file_rest" />
+        </service>
+    </services>
+    
+</container>

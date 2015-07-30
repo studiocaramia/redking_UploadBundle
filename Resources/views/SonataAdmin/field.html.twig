@@ -1,0 +1,26 @@
+{% block field %}
+    {% import "RedkingUploadBundle:SonataAdmin:macro.html.twig" as upload %}
+    {% spaceless %}
+    <div>
+        {% if "upload_mapping" in field_description.options|keys %}
+            {% set file = field_description.options['upload_mapping'] %}
+            {% set field = field_description.fieldName %}
+
+            {% set max_height = "max_height" in field_description.options|keys ? field_description.options['max_height'] : null %}
+            {% set resize_name = "resize_name" in field_description.options|keys ? field_description.options['resize_name'] : null %}
+            {% set show_link = "show_link" in field_description.options|keys ? field_description.options['show_link'] : true %}
+            
+            {% if field_description.mappingType == 'string' %}
+                {{ upload.image(object, file, max_height, resize_name, show_link) }}
+            {% else %}
+                {% for child in attribute(object, field) %}
+                    {{ upload.image(child, file, max_height, resize_name, show_link) }}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="alert alert-danger"><strong>Error !</strong><br />You must define the "upload_mapping" option</div>
+        {% endif %}
+    </div>
+    {% endspaceless %}
+{% endblock %}
+
